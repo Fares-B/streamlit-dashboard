@@ -1,6 +1,6 @@
 import streamlit as st
-import matplotlib.pyplot as plt
 from Dataset import Dataset, allPlayersName, allChampionsName, allPositionsName, allTeamsName
+from functions import printBarPlot
 
 POSITIONS = allPositionsName
 CHAMPIONS = allChampionsName
@@ -18,6 +18,8 @@ st.set_page_config(
   layout="wide",
   initial_sidebar_state="expanded",
 )
+st.set_option('deprecation.showPyplotGlobalUse', False)
+
 
 st.title("Dashboard Worlds 2021")
 
@@ -66,59 +68,49 @@ with colType:
 with colPosition:
   optionPosition = st.selectbox('Select the position', ['All'] + POSITIONS, key="optionPosition", on_change=onChangePosition)
 
-# Col
-col1, col2, col3 = st.columns([1, 7, 1])
+colChampLeft, colChampRight = st.columns([1,1])
+with colChampLeft:
+  optionMe = st.selectbox(optionType, TYPE[optionType], key="optionSelected", on_change=onChangeSelected)
+with colChampRight:
+  optionPosition = st.selectbox(optionType+" versus", ["All"] + TYPE[optionType], key="optionVersus", on_change=onChangeVersus)
 
-nbGamesCol, winCol = st.columns([1,1])
-with nbGamesCol:
-  st.header("N°Games")
-with winCol:
-  st.header("Win")
+
+col1, col2, col3, col4 = st.columns([1, 1, 2, 2])
 with col1:
-  optionMe = st.radio(optionType, TYPE[optionType], key="optionSelected", on_change=onChangeSelected)
+  st.markdown('<h2 style="text-align: center;">N°Games</h2>', unsafe_allow_html=True)
+  st.markdown('<h4 style="color: #007FFF;text-align: center;">'+ str(st.session_state.dataset.nbGames) +'</h4>', unsafe_allow_html=True)
+  st.markdown('<h4 style="color: #FF003F;text-align: center;">'+ str(st.session_state.dataset.otherNbGames) +'</h4>', unsafe_allow_html=True)
 
 with col2:
-  st.text("Type : " + st.session_state.dataset.datasetType)
-  st.text("Position : " + (st.session_state.dataset.position if st.session_state.dataset.position != "" else "All"))
-  st.text("\n----------------\n\nSelected : " +st.session_state.dataset.name)
-  st.text("Kda : " + str(st.session_state.dataset.kda))
-  st.text("nb games : " + str(st.session_state.dataset.nbGames))
-  st.text("Winrate : " + str(st.session_state.dataset.winrate))
-
-  st.text("\n----------------\n\nVersus : " + (st.session_state.dataset.versus if st.session_state.dataset.versus != "" else "All"))
-  st.text("kda : " + str(st.session_state.dataset.otherKda))
-  st.text("nb games : " + str(st.session_state.dataset.otherNbGames))
-  st.text("winrate : " + str(st.session_state.dataset.otherWinrate))
-
-
-  # with nbGamesCol:
-  #   nbGamesLeft, nbGamesRight = st.columns([1,1])
-    # st.header("N°Games")
-  #   with nbGamesLeft:
-  #     st.header("5")
-  #   with nbGamesRight:
-  #     st.header("10")
-  
-  # with winCol:
-  #   winLeft, winRight = st.columns([1,1])
-    # st.header("Winrate")
-  #   with winLeft:
-  #     st.header("40%")
-  #   with winRight:
-  #     st.header("60%")
-
-  # st.header("A dog")
-  # st.image("https://static.streamlit.io/examples/dog.jpg")
+  st.markdown('<h2 style="text-align: center;">Winrate</h2>', unsafe_allow_html=True)
+  st.markdown('<h4 style="color: #007FFF;text-align: center;">'+ str(int(st.session_state.dataset.winrate * 100)) +'%</h4>', unsafe_allow_html=True)
+  st.markdown('<h4 style="color: #FF003F;text-align: center;">'+ str(int(st.session_state.dataset.otherWinrate * 100)) +'%</h4>', unsafe_allow_html=True)
 
 with col3:
-  optionVersus = st.radio(optionType, ["All"] + TYPE[optionType], key="optionVersus", on_change=onChangeVersus)
+  st.markdown('<h2 style="text-align: center;">Kda</h2>', unsafe_allow_html=True)
+  st.pyplot(printBarPlot([st.session_state.dataset.kda, st.session_state.dataset.otherKda], [st.session_state.dataset.name, "others" if st.session_state.dataset.versus == "" else st.session_state.dataset.versus], st.session_state.dataset.datasetType, "kda"))
+
+with col4:
+  st.markdown('<h2 style="text-align: center;">Gold</h2>', unsafe_allow_html=True)
+  st.pyplot(printBarPlot([st.session_state.dataset.golds, st.session_state.dataset.otherGolds], [st.session_state.dataset.name, "others" if st.session_state.dataset.versus == "" else st.session_state.dataset.versus], st.session_state.dataset.datasetType, "gold"))
+
+col5, col6, col7 = st.columns([2, 1, 1])
+with col6:  
+  st.markdown('<h2 style="text-align: center;">Creep Score</h2>', unsafe_allow_html=True)
+  st.pyplot(printBarPlot([st.session_state.dataset.creepScore, st.session_state.dataset.otherCreepScore], [st.session_state.dataset.name, "others" if st.session_state.dataset.versus == "" else st.session_state.dataset.versus], st.session_state.dataset.datasetType, "creep"))
+
+with col7:
+  st.markdown('<h2 style="text-align: center;">Ward Interactions</h2>', unsafe_allow_html=True)
+  st.pyplot(printBarPlot([st.session_state.dataset.wardInteractions, st.session_state.dataset.otherWardInteractions], [st.session_state.dataset.name, "others" if st.session_state.dataset.versus == "" else st.session_state.dataset.versus], st.session_state.dataset.datasetType, "vision"))
 
 
+# st.text("Type : " + st.session_state.dataset.datasetType)
+# st.text("Position : " + (st.session_state.dataset.position if st.session_state.dataset.position != "" else "All"))
+# st.text("\n----------------\n\nSelected : " +st.session_state.dataset.name)
+# st.text("Kda : " + str(st.session_state.dataset.kda))
+# st.text("Winrate : " + str(st.session_state.dataset.winrate))
 
-# with st.sidebar:
-#   for x in ["vert", "rouge", "bleu", "yellow"]:
-#     if st.button(x):
-#       setTitle(x)
-#       if x == "bleu":
-#         titleEl.empty()
-
+# st.text("\n----------------\n\nVersus : " + (st.session_state.dataset.versus if st.session_state.dataset.versus != "" else "All"))
+# st.text("kda : " + str(st.session_state.dataset.otherKda))
+# st.text("nb games : " + str(st.session_state.dataset.otherNbGames))
+# st.text("winrate : " + str(st.session_state.dataset.otherWinrate))

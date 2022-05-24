@@ -12,12 +12,14 @@ class Dataset:
   
   winrate = 0
   kda = 0
+  golds = 0
   creepScore = 0
   wardInteractions = 0
 
   otherWinrate = 0
   otherCreepScore = 0
   otherKda = 0
+  otherGolds = 0
   otherWardInteractions = 0
 
   def __init__(self, name, position="", versus="", datasetType="Champion") -> None:
@@ -32,6 +34,7 @@ class Dataset:
     self.setOtherWinRate()
     self.setCreepScore()
     self.setWardInteraction()
+    self.setGold()
 
   def loadDataset(self) -> None:
     self.initialDataset = worlds[worlds[self.datasetType] == self.name]
@@ -86,6 +89,12 @@ class Dataset:
       self.wardInteractions = float(self.dataset[["Ward Interactions"]].mean())
     if(self.otherNbGames != 0):
       self.otherWardInteractions = float(self.otherDataset[["Ward Interactions"]].mean())
+  
+  def setGold(self) -> None:
+    if(self.nbGames != 0):
+      self.golds = float(self.dataset[["Gold Earned"]].mean())
+    if(self.otherNbGames != 0):
+      self.otherGolds = float(self.otherDataset[["Gold Earned"]].mean())
   
 
   def getFrequenceOfDataset(self, needles):
