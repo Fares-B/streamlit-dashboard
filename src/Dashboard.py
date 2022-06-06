@@ -1,6 +1,6 @@
 import streamlit as st
 from Dataset import Dataset, allPlayersName, allChampionsName, allPositionsName, allTeamsName
-from functions import printBarPlot
+from functions import printBar, printBarPlot
 
 POSITIONS = allPositionsName
 CHAMPIONS = allChampionsName
@@ -78,13 +78,13 @@ with colChampRight:
 col1, col2, col3, col4 = st.columns([1, 1, 2, 2])
 with col1:
   st.markdown('<h2 style="text-align: center;">N°Games</h2>', unsafe_allow_html=True)
-  st.markdown('<h4 style="color: #007FFF;text-align: center;">'+ str(st.session_state.dataset.nbGames) +'</h4>', unsafe_allow_html=True)
-  st.markdown('<h4 style="color: #FF003F;text-align: center;">'+ str(st.session_state.dataset.otherNbGames) +'</h4>', unsafe_allow_html=True)
+  st.markdown('<h1 style="color: #007FFF;text-align: center;">'+ str(st.session_state.dataset.nbGames) +'</h1>', unsafe_allow_html=True)
+  st.markdown('<h1 style="color: #FF003F;text-align: center;">'+ str(st.session_state.dataset.otherNbGames) +'</h1>', unsafe_allow_html=True)
 
 with col2:
   st.markdown('<h2 style="text-align: center;">Winrate</h2>', unsafe_allow_html=True)
-  st.markdown('<h4 style="color: #007FFF;text-align: center;">'+ str(int(st.session_state.dataset.winrate * 100)) +'%</h4>', unsafe_allow_html=True)
-  st.markdown('<h4 style="color: #FF003F;text-align: center;">'+ str(int(st.session_state.dataset.otherWinrate * 100)) +'%</h4>', unsafe_allow_html=True)
+  st.markdown('<h1 style="color: #007FFF;text-align: center;">'+ str(int(st.session_state.dataset.winrate * 100)) +'%</h1>', unsafe_allow_html=True)
+  st.markdown('<h1 style="color: #FF003F;text-align: center;">'+ str(int(st.session_state.dataset.otherWinrate * 100)) +'%</h1>', unsafe_allow_html=True)
 
 with col3:
   st.markdown('<h2 style="text-align: center;">Kda</h2>', unsafe_allow_html=True)
@@ -95,6 +95,14 @@ with col4:
   st.pyplot(printBarPlot([st.session_state.dataset.golds, st.session_state.dataset.otherGolds], [st.session_state.dataset.name, "others" if st.session_state.dataset.versus == "" else st.session_state.dataset.versus], st.session_state.dataset.datasetType, "gold"))
 
 col5, col6, col7 = st.columns([2, 1, 1])
+with col5:
+  st.markdown('<h2 style="text-align: center;">Played Champions</h2>', unsafe_allow_html=True)
+  query = "Champion"
+  championName = ""
+  if(optionType == "Champion"):
+    query = "Team"
+  st.pyplot(printBar(st.session_state.dataset.getFrequenceOfDataset(query), optionType))
+
 with col6:  
   st.markdown('<h2 style="text-align: center;">Creep Score</h2>', unsafe_allow_html=True)
   st.pyplot(printBarPlot([st.session_state.dataset.creepScore, st.session_state.dataset.otherCreepScore], [st.session_state.dataset.name, "others" if st.session_state.dataset.versus == "" else st.session_state.dataset.versus], st.session_state.dataset.datasetType, "creep"))
@@ -103,6 +111,8 @@ with col7:
   st.markdown('<h2 style="text-align: center;">Ward Interactions</h2>', unsafe_allow_html=True)
   st.pyplot(printBarPlot([st.session_state.dataset.wardInteractions, st.session_state.dataset.otherWardInteractions], [st.session_state.dataset.name, "others" if st.session_state.dataset.versus == "" else st.session_state.dataset.versus], st.session_state.dataset.datasetType, "vision"))
 
+description = "❕ Data retrieved from the kaggle site, a user published the dataset by retrieving it from the lolesport website. The dataset contains the play in games of the 2021 worlds, with 200 lines each line represents a player and his stats in a game."
+st.caption(description)
 
 # st.text("Type : " + st.session_state.dataset.datasetType)
 # st.text("Position : " + (st.session_state.dataset.position if st.session_state.dataset.position != "" else "All"))

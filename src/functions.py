@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from collections import Counter, OrderedDict
 
 def getLabels(typeData="kda"):
   # title, x label, y label
@@ -21,7 +22,7 @@ def printBarPlot(height, bars, datasetType="Champion", dataTypeNeed="kda"):
   colors = ['blue', 'red']
 
   # Create bars with different colors
-  fig, ax = plt.subplots()
+  fig, ax = plt.subplots(figsize=(5,3))
   ax.bar(x_pos, height, color=colors)
 
   # Create names on the x-axis
@@ -32,3 +33,23 @@ def printBarPlot(height, bars, datasetType="Champion", dataTypeNeed="kda"):
   plt.title(labels[0] + datasetType)
 
   return fig
+
+def printBar(items, datasetType="Champion"):
+  fig = plt.figure(figsize=(6, 3), dpi=200)
+  x = Counter(items)
+  itemsSorted = OrderedDict(x.most_common(5))
+
+  ax = fig.add_axes([0,0,1,1])
+  
+  ax.bar(itemsSorted.keys(), itemsSorted.values(), color="blue")
+
+  title = "team having played the most this champion"
+  if(datasetType == "Team"):
+    title = "the most played champions by this team"
+  if(datasetType == "Player"):
+    title = "most played champions by this player"
+  plt.title(title)
+
+  plt.yticks(np.arange(0, max(itemsSorted.values()) + 1, 1))
+  return fig
+
